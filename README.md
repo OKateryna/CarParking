@@ -1,2 +1,2 @@
 # CarParking
-The console project wich emulates the car parking.
+The console project which emulates the car parking.
