@@ -6,13 +6,11 @@ using System.Threading.Tasks;
 
 namespace Parking
 {
-    class Program
+    public enum CarType
     {
-        static void Main(string[] args)
-        {
-            
-
-
-        }
+        Passenger = 1,
+        Truck,
+        Bus,
+        Motorcycle
     }
 }
