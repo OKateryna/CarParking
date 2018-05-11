@@ -8,7 +8,7 @@ namespace Parking
 {
     static class Settings
     {
-        public readonly static Dictionary<CarType, int> Prices = new Dictionary<CarType, int>
+        public readonly static Dictionary<CarType, double> Prices = new Dictionary<CarType, double>
         {
             {CarType.Truck, 5 },
             {CarType.Passenger, 3 },
@@ -16,7 +16,7 @@ namespace Parking
             {CarType.Motorcycle, 1 }
         };
         public readonly static int ParkingSpace = 10;
-        public readonly static int Fine = 2;
+        public readonly static double Fine = 2;
         public readonly static int Timeout = 3;
     }
 }

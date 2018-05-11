@@ -9,7 +9,7 @@ namespace Parking
     public class Car
     {
         private int id;
-        private int balance;
+        private double balance;
         private CarType carType;
         private static int count = 1;
 
@@ -21,13 +21,14 @@ namespace Parking
             }
         }
 
-        public int Balance
+        public double Balance
         {
             get
             {
                 return balance;
             }
         }
+
         public CarType CarType
         {
             get
@@ -36,22 +37,21 @@ namespace Parking
             }
         }
 
-        public Car(int balance, CarType carType)
+        public Car(double balance, CarType carType)
         {
             this.id = count++;
             this.balance = balance;
             this.carType = carType;
         }
 
-        public void Withdraw(int amount)
+        public void Withdraw(double amount)
         {
             balance -= amount;
         }
 
-        public void Put(int amount)
+        public void Put(double amount)
         {
             balance += amount;
         }
-
     }
 }

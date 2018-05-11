@@ -36,7 +36,7 @@ namespace Parking
             }
         }
 
-        public Transaction(int carId, int amount)
+        public Transaction(int carId, double amount)
         {
             this.transactionDateTime = DateTime.Now;
             this.carId = carId;
