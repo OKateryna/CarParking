@@ -3,17 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Threading;
+using System.Text;
 
 namespace Parking
 {
     public class Parking
     {
+        public const int transactionWritePeriod = 60;
         private readonly List<Car> cars;
         private readonly List<Transaction> transactions;
         private double balance;
         private Timer withdrawTimer;
         private Timer transactionTimer;
-        private const int transactionWritePeriod = 60;
         private const string transactionLogFileName = "Transactions.log";
 
         public List<Car> Cars
@@ -40,12 +41,12 @@ namespace Parking
             }
         }
 
-        public Parking()
+        private Parking()
         {
             cars = new List<Car>(Settings.ParkingSpace);
             transactions = new List<Transaction>();
-            withdrawTimer = new Timer(OnWithdrawTimer, null, 0, Settings.Timeout);
-            transactionTimer = new Timer(OnTransactionTimer, null, 0, transactionWritePeriod);
+            withdrawTimer = new Timer(OnWithdrawTimer, null, 0, Settings.Timeout * 1000);
+            transactionTimer = new Timer(OnTransactionTimer, null, 0, transactionWritePeriod * 1000);
         }
 
         public void AddCar(Car car)
@@ -58,23 +59,29 @@ namespace Parking
             cars.Add(car);
         }
 
-        public void RemoveCar(Car car)
+        public bool RemoveCar(Car car)
         {
             if (!cars.Contains(car))
             {
                 throw new Exception("Car not found");
             }
 
+            if (car.Balance < 0)
+            {
+                return false;
+            }
+
             cars.Remove(car);
+            return true;
         }
 
-        public void RemoveCar(int carId)
+        public bool RemoveCar(int carId)
         {
             var car = GetCarById(carId);
-            RemoveCar(car);
+            return RemoveCar(car);
         }
 
-        public void InputMoney(int carId, double amount)
+        public void PayForCar(int carId, double amount)
         {
             var car = GetCarById(carId);
             if (car == null)
@@ -100,6 +107,22 @@ namespace Parking
             return Settings.ParkingSpace - cars.Count;
         }
 
+        public string GetFormattedTransactionLog()
+        {
+            StringBuilder logStringBuilder = new StringBuilder();
+            using (StreamReader reader = new StreamReader(transactionLogFileName))
+            {
+                string line;
+                while((line = reader.ReadLine()) != null)
+                {
+                    var lineSplit = line.Split('-');
+                    logStringBuilder.AppendLine($"Earnings amount - {lineSplit[0]} on {lineSplit[1]}");
+                }
+            }
+
+            return logStringBuilder.ToString();
+        }
+
         private void OnWithdrawTimer(object state)
         {
             foreach (var car in cars)
@@ -111,6 +134,7 @@ namespace Parking
                 }
 
                 car.Withdraw(amount);
+                balance += amount;
                 Transaction transaction = new Transaction(car.Id, amount);
                 transactions.Add(transaction);
             }
@@ -135,7 +159,7 @@ namespace Parking
         private static object lockObj = new object();
         private static Parking instance;
 
-        public Parking Instance
+        public static Parking Instance
         {
             get
             {

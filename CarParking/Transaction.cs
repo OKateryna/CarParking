@@ -42,5 +42,10 @@ namespace Parking
             this.carId = carId;
             this.amount = amount;
         }
+
+        public override string ToString()
+        {
+            return $"Transaction time - {transactionDateTime}; Car Id - {carId}; Amount - {amount}";
+        }
     }
 }

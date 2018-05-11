@@ -53,5 +53,10 @@ namespace Parking
         {
             balance += amount;
         }
+
+        public override string ToString()
+        {
+            return $"Id: {id}, Balance: {balance}, Car type: {carType}";
+        }
     }
 }
