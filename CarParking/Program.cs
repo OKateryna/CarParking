@@ -168,6 +168,11 @@ namespace Parking
 
                     Console.WriteLine("Please enter initial car balance:");
                     int balance = GetUserInput();
+                    if (balance <= 0)
+                    {
+                        Console.WriteLine("Balance can not be less or equal zero.");
+                    }
+
                     Car carToAdd = new Car(balance, carType);
                     Parking.Instance.AddCar(carToAdd);
                     Console.WriteLine("Car added! Info:\r\n{0}", carToAdd);

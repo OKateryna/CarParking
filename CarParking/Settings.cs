@@ -18,5 +18,6 @@ namespace Parking
         public readonly static int ParkingSpace = 10;
         public readonly static double Fine = 2;
         public readonly static int Timeout = 3;
+        public readonly static string TransactionLogFileName = "Transactions.log";
     }
 }
