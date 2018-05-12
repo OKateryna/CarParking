@@ -45,8 +45,9 @@ namespace Parking
         {
             cars = new List<Car>(Settings.ParkingSpace);
             transactions = new List<Transaction>();
-            withdrawTimer = new Timer(OnWithdrawTimer, null, 0, Settings.Timeout * 1000);
-            transactionTimer = new Timer(OnTransactionTimer, null, 0, transactionWritePeriod * 1000);
+            withdrawTimer = new Timer(OnWithdrawTimer, null, Settings.Timeout * 1000, Settings.Timeout * 1000);
+            transactionTimer = new Timer(OnTransactionTimer, null, transactionWritePeriod * 1000, transactionWritePeriod * 1000);
+            File.Create(transactionLogFileName);
         }
 
         public void AddCar(Car car)
@@ -149,7 +150,7 @@ namespace Parking
         private void LogTransactions(IEnumerable<Transaction> lastMinuteTransactions)
         {
             var totalAmount = lastMinuteTransactions.Sum(x => x.Amount);
-            using (StreamWriter writer = new StreamWriter(transactionLogFileName, false))
+            using (StreamWriter writer = new StreamWriter(transactionLogFileName, true))
             {
                 string lineToWrite = string.Format("{0}-{1}", totalAmount, DateTime.Now);
                 writer.WriteLine(lineToWrite);
