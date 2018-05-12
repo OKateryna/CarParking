@@ -114,7 +114,15 @@ namespace Parking
                         
                         break;
                     case 3:
-                        InputMoneyFlow();
+                        if (Parking.Instance.FreeParkingLotsCount() < Settings.ParkingSpace)
+                        {
+                            InputMoneyFlow();
+                        }
+                        else
+                        {
+                            Console.WriteLine("Cannot insert money. The parking lot is empty!");
+                        }
+                       
                         break;
                     case 0:
                         return;
