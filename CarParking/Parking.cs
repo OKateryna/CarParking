@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Parking
 {
-    public class Parking
+    public sealed class Parking
     {
         public const int transactionWritePeriod = 60;
         private readonly List<Car> cars;
@@ -15,7 +15,6 @@ namespace Parking
         private double balance;
         private Timer withdrawTimer;
         private Timer transactionTimer;
-        private const string transactionLogFileName = "Transactions.log";
 
         public List<Car> Cars
         {
@@ -47,7 +46,10 @@ namespace Parking
             transactions = new List<Transaction>();
             withdrawTimer = new Timer(OnWithdrawTimer, null, Settings.Timeout * 1000, Settings.Timeout * 1000);
             transactionTimer = new Timer(OnTransactionTimer, null, transactionWritePeriod * 1000, transactionWritePeriod * 1000);
-            File.Create(transactionLogFileName);
+
+            using (var file = File.Create(Settings.TransactionLogFileName))
+            {
+            }
         }
 
         public void AddCar(Car car)
@@ -111,7 +113,7 @@ namespace Parking
         public string GetFormattedTransactionLog()
         {
             StringBuilder logStringBuilder = new StringBuilder();
-            using (StreamReader reader = new StreamReader(transactionLogFileName))
+            using (StreamReader reader = new StreamReader(Settings.TransactionLogFileName))
             {
                 string line;
                 while((line = reader.ReadLine()) != null)
@@ -150,32 +152,20 @@ namespace Parking
         private void LogTransactions(IEnumerable<Transaction> lastMinuteTransactions)
         {
             var totalAmount = lastMinuteTransactions.Sum(x => x.Amount);
-            using (StreamWriter writer = new StreamWriter(transactionLogFileName, true))
+            using (StreamWriter writer = new StreamWriter(Settings.TransactionLogFileName, true))
             {
                 string lineToWrite = string.Format("{0}-{1}", totalAmount, DateTime.Now);
                 writer.WriteLine(lineToWrite);
             }
         }
-
-        private static object lockObj = new object();
-        private static Parking instance;
+        
+        private static readonly Lazy<Parking> instance = new Lazy<Parking>(() => new Parking());
 
         public static Parking Instance
         {
             get
             {
-                if (instance == null)
-                {
-                    lock(lockObj)
-                    {
-                        if (instance == null)
-                        {
-                            instance = new Parking();
-                        }
-                    }
-                }
-
-                return instance;
+                return instance.Value;
             }
         }
     }
